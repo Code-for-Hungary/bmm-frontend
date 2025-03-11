@@ -77,16 +77,30 @@ document.addEventListener('alpine:init', () => {
                     }
                 });
             this.$watch('formData.eventgenerator', () => {
-                this.$nextTick(() => {
+                setTimeout(() => {
+                    // First, destroy all existing Select2 instances
+                    document.querySelectorAll('.select2-container').forEach(container => {
+                        container.remove();
+                    });
+
                     document.querySelectorAll('.select2').forEach(el => {
+                        if ($(el).hasClass('select2-hidden-accessible')) {
+                            $(el).select2('destroy');
+                        }
+
+                        // Remove any leftover classes
+                        $(el).removeClass('select2-hidden-accessible');
+
+                        // Initialize fresh Select2 instances
                         $.fn.select2.defaults.set('language', 'hu');
                         $(el).select2({
                             placeholder: 'Válassz a lehetőségek közül', 
                             closeOnSelect: false, 
-                            language: "hu"
+                            language: "hu",
+                            width: '100%',
                         });
                     });
-                });
+                }, 50); // Short delay to ensure DOM is ready
             });
 
             // Make Select2 more accessible
