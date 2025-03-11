@@ -6,14 +6,50 @@ document.addEventListener('alpine:init', () => {
         formData: null,
         validation: null,
         selectedEg: null,
+        formSubmitted: false,
+        isSubmitting: false,
+        
+        isValidEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        },
+        
+        validateForm() {
+            let isValid = true;
+            
+            // Reset validation state
+            this.formSubmitted = true;
+            
+            // Check email
+            if (!this.formData.email || !this.isValidEmail(this.formData.email)) {
+                isValid = false;
+            }
+            
+            // Check parameter if event type is 1 (search for expression)
+            if (this.formData.eventtype === '1' && !this.formData.parameter) {
+                isValid = false;
+            }
+            
+            // Check if event generator is selected
+            if (!this.formData.eventgenerator) {
+                isValid = false;
+            }
+            
+            return isValid;
+        },
+        
+        // Clear form data and validation state
         clearFormData() {
             this.formData = {
                 email: null,
                 eventgenerator: null,
                 parameter: null,
                 eventtype: '1',
-            }
+            };
+            this.formSubmitted = false;
         },
+        
+        // Initialize the component
         init() {
             fetch(new URL('/templates/header.html', document.URL))
                 .then(response => response.text())
@@ -41,14 +77,49 @@ document.addEventListener('alpine:init', () => {
                     }
                 });
             this.$watch('formData.eventgenerator', () => {
-                this.$nextTick(() => {
-                    document.querySelectorAll('.select2').forEach(el => {
-                        $(el).select2({placeholder: 'Válassz a lehetőségek közül', closeOnSelect: false});
+                setTimeout(() => {
+                    // First, destroy all existing Select2 instances
+                    document.querySelectorAll('.select2-container').forEach(container => {
+                        container.remove();
                     });
+
+                    document.querySelectorAll('.select2').forEach(el => {
+                        if ($(el).hasClass('select2-hidden-accessible')) {
+                            $(el).select2('destroy');
+                        }
+
+                        // Remove any leftover classes
+                        $(el).removeClass('select2-hidden-accessible');
+
+                        // Initialize fresh Select2 instances
+                        $.fn.select2.defaults.set('language', 'hu');
+                        $(el).select2({
+                            placeholder: 'Válassz a lehetőségek közül', 
+                            closeOnSelect: false, 
+                            language: "hu",
+                            width: '100%',
+                        });
+                    });
+                }, 50); // Short delay to ensure DOM is ready
+            });
+
+            // Make Select2 more accessible
+            this.$nextTick(() => {
+                $(document).on('select2:open', () => {
+                    document.querySelector('.select2-search__field').focus();
                 });
             });
         },
+
+        // Save form data
         save() {
+            // Validate form before submission
+            if (!this.validateForm()) {
+                this.modalText = 'Kérjük, ellenőrizd a megadott adatokat és javítsd a hibákat.';
+                this.isModalOpen = true;
+                return;
+            }
+            this.isSubmitting = true;
             const formData = new URLSearchParams();
             for (const key in this.formData) {
                 if (Array.isArray(this.formData[key])) {
@@ -80,9 +151,12 @@ document.addEventListener('alpine:init', () => {
                     }
                 })
                 .catch((error) => {
-                    alert(error);
+                    this.modalText = 'Hiba történt az adatok elküldése során. Kérjük, próbáld újra később.';
+                    this.isModalOpen = true;
+                    console.error('Form submission error:', error);
                 })
                 .finally(() => {
+                    this.isSubmitting = false;
                 });
         }
     }));
