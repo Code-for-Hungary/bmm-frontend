@@ -31,10 +31,13 @@
     <link href="/favicon.svg" rel="icon" type="image/svg+xml">
     <link href="/apple-touch-icon.png" rel="apple-touch-icon">
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script defer src="config.js"></script>
     <script defer src="/js/vendor/alpinejs.min.js"></script>
     <script src="/js/main.js?v=1.6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="css/normalize.css" rel="stylesheet">
     <link href="css/main.css?v=1.8" rel="stylesheet">
 
@@ -90,8 +93,7 @@
                         :key="setting.form_name">
                         <div class="bmm-control-row">
                             <label class="bmm-label" x-text="setting.title"></label>
-                            <select class="bmm-input" x-model="formData[setting.form_name]">
-                                <option value="all" selected>Mindegyik</option>
+                            <select :id="'select_'+setting.form_name" class="select2 bmm-input" multiple="multiple" x-model="formData[setting.form_name]">
                                 <template x-for="option in setting.options || []" :key="option">
                                     <option :value="option" x-text="option"></option>
                                 </template>

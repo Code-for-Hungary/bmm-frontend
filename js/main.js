@@ -40,11 +40,32 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
                 });
+            this.$watch('formData.eventgenerator', () => {
+                this.$nextTick(() => {
+                    document.querySelectorAll('.select2').forEach(el => {
+                        $(el).select2({placeholder: 'Válassz a lehetőségek közül', closeOnSelect: false});
+                    });
+                });
+            });
         },
         save() {
+            const formData = new URLSearchParams();
+            for (const key in this.formData) {
+                if (Array.isArray(this.formData[key])) {
+                    this.formData[key].forEach(value => formData.append(key, value));
+                } else {
+                    formData.append(key, this.formData[key]);
+                }
+            }
+            document.querySelectorAll('.select2').forEach(select => {
+                const name = select.getAttribute('id')?.replace('select_option_', 'option_');
+                if (name) {
+                    $(select).val().forEach(value => formData.append(name, value));
+                }
+            });
             fetch(new URL('/api/subscriptions', API_URL), {
                 method: 'POST',
-                body: new URLSearchParams(this.formData)
+                body: formData
             })
                 .then((response) => response.json())
                 .then((respdata) => {
