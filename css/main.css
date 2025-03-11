@@ -14,6 +14,7 @@
     --brand-color: #46009e;
     --secondary-color: #FF3366;
     --light-font-color: #F9F6F6;
+    --dark-font-color: #000000;
     --default-radius: 25px;
     --input-radius: 5px;
     --gutter: 1rem;
@@ -21,6 +22,16 @@
     --input-v-gutter: 0.5rem;
 
     accent-color: var(--brand-color);
+}
+
+/* Make alerts stand out more */
+
+[role="alert"] {
+    color: var(--secondary-color);
+}
+
+.bmm-adatkezelesi, .bmm-adatkezelesi a {
+    color: var(--dark-font-color);
 }
 
 @font-face {

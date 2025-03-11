@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js" lang="hu">
 
 <head>
     <!-- Google Tag Manager -->
@@ -19,7 +19,7 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <title>Figyusz! - figyusz.k-monitor.hu</title>
-    <meta content="" name="description">
+    <meta content="A Figyusz egy alkalmazás, amelyben értesítésekre iratkozhatsz fel, hogy azonnal értesülj a figyelt közigazgatási és állami adatbázisok frissülése esetén." name="description">
     <meta content="width=device-width, initial-scale=1" name="viewport">
 
     <meta content="" property="og:title">
@@ -36,6 +36,7 @@
     <script defer src="/js/vendor/alpinejs.min.js"></script>
     <script src="/js/main.js?v=1.6"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/hu.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="css/normalize.css" rel="stylesheet">
@@ -51,8 +52,7 @@
             src="https://www.googletagmanager.com/ns.html?id=GTM-WX4K5N7" style="display:none;visibility:hidden" width="0"></iframe>
 </noscript>
 <!-- End Google Tag Manager (noscript) -->
-<header class="bmm-header" x-ref="header">
-</header>
+<header class="bmm-header" x-ref="header"></header>
 <div class="bmm-container">
     <div class="bmm-data-container">
         <div class="bmm-row bmm-flex-dir-row">
@@ -63,36 +63,42 @@
                     <h4>Feliratkozáshoz adj meg egy téged érdeklő kulcsszót és az e-mail címedet, valamint válaszd ki, mely adatbázisról
                         szeretnél értesítést kapni. Keresőink rendszeresen figyelik az oldalakat, találat esetén e-mailben küldenek értesítést. </h4>
                     <div class="bmm-control-row">
-                        <label class="bmm-label">Válaszd ki, mely adatbázis frissítései érdekelnek</label>
-                        <template
-                            :key="eventgen.id"
-                            x-for="eventgen in eventgeneratorList"
-                        >
-                            <div class="bmm-radio">
-                                <input
-                                    :value="eventgen.id"
-                                    class="bmm-radio-input"
-                                    name="eventgenerator"
-                                    type="radio"
-                                    x-model="formData.eventgenerator"
-                                >
-                                <div
-                                    class="bmm-radio-caption"
-                                    x-text="eventgen.name"
-                                ></div>
-                                <template x-if="eventgen.description">
-                                    <div
-                                        class="bmm-radio-description"
-                                        x-html="eventgen.description"
-                                    ></div>
-                                </template>
-                            </div>
-                        </template>
+                        <fieldset role="radiogroup" aria-labelledby="database-type-legend">
+                            <legend id="database-type-legend" class="bmm-label">Válaszd ki, mely adatbázis frissítései érdekelnek</legend>
+                            <template
+                                :key="eventgen.id"
+                                x-for="eventgen in eventgeneratorList"
+                            >
+                                <div class="bmm-radio">
+                                    <input
+                                        :id="'eventgen-' + eventgen.id"
+                                        :value="eventgen.id"
+                                        class="bmm-radio-input"
+                                        name="eventgenerator"
+                                        type="radio"
+                                        x-model="formData.eventgenerator"
+                                        :aria-describedby="'description-' + eventgen.id"
+                                    >
+                                    <label
+                                        :for="'eventgen-' + eventgen.id"
+                                        class="bmm-radio-caption"
+                                        x-text="eventgen.name"
+                                    ></label>
+                                    <template x-if="eventgen.description">
+                                        <div
+                                            :id="'description-' + eventgen.id"
+                                            class="bmm-radio-description"
+                                            x-html="eventgen.description"
+                                        ></div>
+                                    </template>
+                                </div>
+                            </template>
+                        </fieldset>
                     </div>
                     <template x-for="setting in eventgeneratorList.find(d => d.id == formData.eventgenerator)?.options_schema || []"
                         :key="setting.form_name">
                         <div class="bmm-control-row">
-                            <label class="bmm-label" x-text="setting.title"></label>
+                            <label :for="'select_'+setting.form_name" class="bmm-label" x-text="setting.title" aria-live="polite"></label>
                             <select :id="'select_'+setting.form_name" class="select2 bmm-input" multiple="multiple" x-model="formData[setting.form_name]">
                                 <template x-for="option in setting.options || []" :key="option">
                                     <option :value="option" x-text="option"></option>
@@ -101,39 +107,73 @@
                         </div>
                     </template>
                     <div class="bmm-control-row">
-                        <label class="bmm-label">Válaszd ki, milyen értesítést szeretnél</label>
-                        <div class="bmm-radio">
-                            <input
-                                :value="1"
-                                class="bmm-radio-input"
-                                name="eventtype"
-                                type="radio"
-                                x-model="formData.eventtype"
-                            >
-                            <div class="bmm-radio-caption">Kifejezést keresek</div>
-                        </div>
-                        <div class="bmm-radio">
-                            <input
-                                :value="2"
-                                class="bmm-radio-input"
-                                name="eventtype"
-                                type="radio"
-                                x-model="formData.eventtype"
-                            >
-                            <div class="bmm-radio-caption">Az adatbázis frissüléséről kérek értesítést</div>
-                        </div>
+                        <fieldset role="radiogroup" aria-labelledby="notification-type-legend">
+                            <legend id="notification-type-legend" class="bmm-label">Válaszd ki, milyen értesítést szeretnél</legend>
+                            <div class="bmm-radio">
+                                <input
+                                    id="eventtype-1"
+                                    :value="1"
+                                    class="bmm-radio-input"
+                                    name="eventtype"
+                                    type="radio"
+                                    x-model="formData.eventtype"
+                                    aria-describedby="eventtype-1-description"
+                                >
+                                <label for="eventtype-1" class="bmm-radio-caption">Kifejezést keresek</label>
+                                <div id="eventtype-1-description" class="sr-only">Értesítés egy megadott kifejezés előfordulásáról</div>
+                            </div>
+                            <div class="bmm-radio">
+                                <input
+                                    id="eventtype-2"
+                                    :value="2"
+                                    class="bmm-radio-input"
+                                    name="eventtype"
+                                    type="radio"
+                                    x-model="formData.eventtype"
+                                    aria-describedby="eventtype-2-description"
+                                >
+                                <label for="eventtype-2" class="bmm-radio-caption">Az adatbázis frissüléséről kérek értesítést</label>
+                                <div id="eventtype-2-description" class="sr-only">Értesítés minden frissítésről</div>
+                            </div>
+                        </fieldset>
                     </div>
                     <div class="bmm-control-row" x-show="formData.eventtype === '1'">
-                        <label class="bmm-label">Add meg a figyelni kívánt kifejezést! (egyszerre csak egy - egy vagy több szóból álló - keresőkifejezésre tudsz feliratkozni)</label>
-                        <input class="bmm-input" required type="text" x-model="formData.parameter">
+                        <label class="bmm-label" for="search-parameter">Add meg a figyelni kívánt kifejezést! (egyszerre csak egy - egy vagy több szóból álló - keresőkifejezésre tudsz feliratkozni)</label>
+                        <input 
+                            id="search-parameter" 
+                            class="bmm-input" 
+                            required 
+                            type="text" 
+                            x-model="formData.parameter"
+                            aria-required="true"
+                            aria-invalid="false"
+                            x-bind:aria-invalid="formData.eventtype === '1' && !formData.parameter ? 'true' : 'false'"
+                            x-bind:aria-describedby="formData.eventtype === '1' && !formData.parameter ? 'parameter-error' : null">
+                        <div id="parameter-error" class="bmm-input-error" x-show="formData.eventtype === '1' && !formData.parameter && formSubmitted" role="alert">Kérjük, add meg a keresendő kifejezést!</div>
                     </div>
                     <div class="bmm-control-row">
-                        <label class="bmm-label">Add meg az e-mail címedet</label>
-                        <input class="bmm-input" required type="email" x-model="formData.email">
-                        <span class="bmm-input-info">&hearts; az e-mail címed megadásával elfogadod az adatkezelési tájékoztatót</span>
+                        <label class="bmm-label" for="user-email">Add meg az e-mail címedet</label>
+                        <input 
+                            id="user-email" 
+                            class="bmm-input" 
+                            required 
+                            type="email" 
+                            x-model="formData.email"
+                            aria-required="true"
+                            aria-invalid="false"
+                            x-bind:aria-invalid="!formData.email || !isValidEmail(formData.email) ? 'true' : 'false'"
+                            x-bind:aria-describedby="'email-info email-error'">
+                        <div id="email-error" class="bmm-input-error" x-show="formSubmitted && (!formData.email || !isValidEmail(formData.email))" role="alert">Kérjük, adj meg egy érvényes e-mail címet!</div>
+                        <span id="email-info" class="bmm-input-info">&hearts; az e-mail címed megadásával elfogadod az adatkezelési tájékoztatót</span>
                     </div>
                     <div class="bmm-control-row flex">
-                        <button class="btn btn-primary center-in-flex" @click="save()">Feliratkozás</button>
+                        <button 
+                            class="btn btn-primary center-in-flex" 
+                            @click="save()"
+                            aria-label="Feliratkozás"
+                            x-bind:aria-busy="isSubmitting ? 'true' : 'false'">
+                            <span x-text="isSubmitting ? 'Feldolgozás...' : 'Feliratkozás'">Feliratkozás</span>
+                        </button>
                     </div>
                     <div x-ref="innerfooter">
                     </div>
