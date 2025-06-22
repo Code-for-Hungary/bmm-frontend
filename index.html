@@ -175,6 +175,9 @@
                             <span x-text="isSubmitting ? 'Feldolgozás...' : 'Feliratkozás'">Feliratkozás</span>
                         </button>
                     </div>
+                    <div class="bmm-control-row" style="text-align: center; margin-top: 20px;">
+                        <p>Már feliratkoztál? <a href="#" @click.prevent="openManageModal()">Itt kezelheted a feliratkozásaidat.</a></p>
+                    </div>
                     <div x-ref="innerfooter">
                     </div>
                 </div>
@@ -200,7 +203,42 @@
         <p x-text="modalText"></p>
     </div>
 </div>
-<div class="overlay" x-cloak x-show="isModalOpen"></div>
+<div
+    class="modal"
+    role="dialog"
+    tabindex="-1"
+    x-cloak
+    x-on:click.away="isManageModalOpen = false"
+    x-show="isManageModalOpen"
+    x-transition
+>
+    <div class="modal-inner">
+        <div class="modal-header">
+            <h3>Feliratkozások kezelése</h3>
+            <button aria-label="Close" x-on:click="isManageModalOpen=false">✖</button>
+        </div>
+        <p>Add meg az e-mail címedet, és elküldjük a feliratkozásaidat kezelő linket.</p>
+        <div class="bmm-control-row">
+            <label class="bmm-label" for="manage-user-email">E-mail cím</label>
+            <input 
+                id="manage-user-email" 
+                class="bmm-input" 
+                required 
+                type="email" 
+                x-model="manageEmail"
+                aria-required="true">
+        </div>
+        <div class="bmm-control-row flex">
+            <button 
+                class="btn btn-primary center-in-flex" 
+                @click="sendManageLink()"
+                x-bind:aria-busy="isSubmitting ? 'true' : 'false'">
+                <span x-text="isSubmitting ? 'Küldés...' : 'Link küldése'">Link küldése</span>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="overlay" x-cloak x-show="isModalOpen || isManageModalOpen"></div>
 
 <footer class="bmm-footer" x-ref="footer">
 </footer>

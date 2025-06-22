@@ -1,6 +1,8 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('figyusz', () => ({
         isModalOpen: false,
+        isManageModalOpen: false,
+        manageEmail: null,
         modalText: '',
         eventgeneratorList: [],
         formData: null,
@@ -158,6 +160,43 @@ document.addEventListener('alpine:init', () => {
                 .finally(() => {
                     this.isSubmitting = false;
                 });
+        },
+
+        openManageModal() {
+            this.isManageModalOpen = true;
+            this.manageEmail = null;
+        },
+
+        sendManageLink() {
+            if (!this.isValidEmail(this.manageEmail)) {
+                this.modalText = 'Kérjük, adj meg egy érvényes e-mail címet.';
+                this.isModalOpen = true;
+                return;
+            }
+            this.isSubmitting = true;
+            const formData = new URLSearchParams();
+            formData.append('email', this.manageEmail);
+
+            fetch(new URL('/api/subscriptions/manage', API_URL), {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.modalText = 'Elküldtük a feliratkozásaidat kezelő linket az e-mail címedre.';
+                } else {
+                    this.modalText = data.message || 'Hiba történt. Kérjük, próbáld újra később.';
+                }
+            })
+            .catch(() => {
+                this.modalText = 'Hiba történt a kérés feldolgozása során. Kérjük, próbáld újra később.';
+            })
+            .finally(() => {
+                this.isSubmitting = false;
+                this.isManageModalOpen = false;
+                this.isModalOpen = true;
+            });
         }
     }));
 });
