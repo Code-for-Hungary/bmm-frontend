@@ -17,7 +17,9 @@ MNV szerződés scraper (Python): https://github.com/Code-for-Hungary/bmm-mnvcon
 
 Bírósági határozatok (Python): https://github.com/Code-for-Hungary/bmm-birosagscraper
 
-(Készülőben) Kormany.hu/dokumentumtar (Python): https://github.com/Code-for-Hungary/bmm-kormanyscraper
+Kormany.hu/dokumentumtar (Python): https://github.com/Code-for-Hungary/bmm-kormanyscraper
+
+Parlamenti irományok scraper (Python): https://github.com/Code-for-Hungary/bmm-parlamentscraper
 
 ## Konfigurálás
 
