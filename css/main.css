@@ -434,6 +434,7 @@ textarea {
     left: 0;
     background: black;
     opacity: 0.75;
+    z-index: 1;
 }
 
 /* ==========================================================================
@@ -604,4 +605,17 @@ textarea {
 .select2-selection__choice__remove span {
     font-family: monospace;
     line-height: 1;
+}
+
+.tagify {
+    width: 100%;
+    background-color: #fff;
+    border: 1px #46009e solid;
+    border-radius: 5px;
+    --tag-bg: #FF3366;
+    --tag-hover: black;
+    --tag-remove-btn-bg--hover: black;
+    --tag-remove-bg: var(--tag-hover);
+    --tag-text-color: #FFF;
+    --tag-remove-btn-color: white;
 }

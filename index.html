@@ -38,6 +38,10 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/hu.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="css/normalize.css" rel="stylesheet">
     <link href="css/main.css?v=1.8" rel="stylesheet">
@@ -138,17 +142,8 @@
                         </fieldset>
                     </div>
                     <div class="bmm-control-row" x-show="formData.eventtype === '1'">
-                        <label class="bmm-label" for="search-parameter">Add meg a figyelni kívánt kifejezést! (egyszerre csak egy - egy vagy több szóból álló - keresőkifejezésre tudsz feliratkozni)</label>
-                        <input 
-                            id="search-parameter" 
-                            class="bmm-input" 
-                            required 
-                            type="text" 
-                            x-model="formData.parameter"
-                            aria-required="true"
-                            aria-invalid="false"
-                            x-bind:aria-invalid="formData.eventtype === '1' && !formData.parameter ? 'true' : 'false'"
-                            x-bind:aria-describedby="formData.eventtype === '1' && !formData.parameter ? 'parameter-error' : null">
+                        <label class="bmm-label" for="search-parameter">Add meg a figyelni kívánt kifejezést!</label>
+                        <input id="search-parameter" name='basic' value=''>
                         <div id="parameter-error" class="bmm-input-error" x-show="formData.eventtype === '1' && !formData.parameter && formSubmitted" role="alert">Kérjük, add meg a keresendő kifejezést!</div>
                     </div>
                     <div class="bmm-control-row">

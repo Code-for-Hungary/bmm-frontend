@@ -111,11 +111,23 @@ document.addEventListener('alpine:init', () => {
                     document.querySelector('.select2-search__field').focus();
                 });
             });
+
+            var inputElm = document.querySelector("#search-parameter");
+            tagify = new Tagify(inputElm, {
+                originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
+            });
+
+            function onChange(e){
+                document.querySelector("#search-parameter").value = e.target.value;
+            }
+            inputElm.addEventListener('change', onChange);
         },
+
 
         // Save form data
         save() {
             // Validate form before submission
+            this.formData.parameter = document.querySelector("#search-parameter").value;
             if (!this.validateForm()) {
                 this.modalText = 'Kérjük, ellenőrizd a megadott adatokat és javítsd a hibákat.';
                 this.isModalOpen = true;
