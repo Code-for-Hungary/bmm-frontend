@@ -49,6 +49,7 @@ document.addEventListener('alpine:init', () => {
                 eventtype: '1',
             };
             this.formSubmitted = false;
+            document.querySelector("#search-parameter").value = '';
         },
         
         // Initialize the component
