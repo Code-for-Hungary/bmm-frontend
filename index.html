@@ -64,8 +64,7 @@
                 <h3 class="highlighted-text">A Figyusz egy alkalmazás, amelyben értesítésekre iratkozhatsz fel, hogy azonnal értesülj a figyelt közigazgatási és
                     állami adatbázisok frissülése esetén.</h3>
                 <div class="bmm-col-80">
-                    <h4>Feliratkozáshoz adj meg egy téged érdeklő kulcsszót és az e-mail címedet, valamint válaszd ki, mely adatbázisról
-                        szeretnél értesítést kapni. Keresőink rendszeresen figyelik az oldalakat, találat esetén e-mailben küldenek értesítést. </h4>
+                    <h4>Feliratkozáshoz válaszd ki, <b>mely adatbázisról</b> szeretnél értesítést kapni, adj meg egy téged érdeklő <b>kulcsszót</b> és az <b>e-mail címedet</b>! Keresőink rendszeresen figyelik az oldalakat, találat esetén e-mailben küldenek értesítést. </h4>
                     <div class="bmm-control-row">
                         <fieldset role="radiogroup" aria-labelledby="database-type-legend">
                             <legend id="database-type-legend" class="bmm-label">Válaszd ki, mely adatbázis frissítései érdekelnek</legend>
@@ -142,12 +141,12 @@
                         </fieldset>
                     </div>
                     <div class="bmm-control-row" x-show="formData.eventtype === '1'">
-                        <label class="bmm-label" for="search-parameter">Add meg a figyelni kívánt kifejezést!</label>
+                        <label class="bmm-label" for="search-parameter">Add meg a figyelni kívánt kifejezést!</label><label class="bmm-radio-caption">Több kifejezést vesszővel elválasztva adhatsz meg</label>
                         <input id="search-parameter" name='basic' value=''>
-                        <div id="parameter-error" class="bmm-input-error" x-show="formData.eventtype === '1' && !formData.parameter && formSubmitted" role="alert">Kérjük, add meg a keresendő kifejezést!</div>
+                        <div id="parameter-error" class="bmm-input-error" x-show="formData.eventtype === '1' && !formData.parameter && formSubmitted" role="alert">Legalább egy kifejezést adj meg!</div>
                     </div>
                     <div class="bmm-control-row">
-                        <label class="bmm-label" for="user-email">Add meg az e-mail címedet</label>
+                        <label class="bmm-label" for="user-email">Add meg az e-mail címedet!</label>
                         <input 
                             id="user-email" 
                             class="bmm-input" 
@@ -159,7 +158,7 @@
                             x-bind:aria-invalid="!formData.email || !isValidEmail(formData.email) ? 'true' : 'false'"
                             x-bind:aria-describedby="'email-info email-error'">
                         <div id="email-error" class="bmm-input-error" x-show="formSubmitted && (!formData.email || !isValidEmail(formData.email))" role="alert">Kérjük, adj meg egy érvényes e-mail címet!</div>
-                        <span id="email-info" class="bmm-input-info">&hearts; az e-mail címed megadásával elfogadod az adatkezelési tájékoztatót</span>
+                        <span id="email-info" class="bmm-input-info">&hearts; az e-mail címed megadásával elfogadod az <a href="https://adatbazis.k-monitor.hu/egyeb/adatkezelesi-tajekoztato" target="new">adatkezelési tájékoztatót</a></span>
                     </div>
                     <div class="bmm-control-row flex">
                         <button 
