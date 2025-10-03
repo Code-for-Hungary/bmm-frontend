@@ -49,7 +49,14 @@ document.addEventListener('alpine:init', () => {
                 eventtype: '1',
             };
             this.formSubmitted = false;
-            document.querySelector("#search-parameter").value = '';
+            const search_fields = document.querySelectorAll(".search-parameter");
+            search_fields.forEach(field => {
+                field.value = '';
+                // Clear Tagify content if it exists
+                if (field.tagify) {
+                    field.tagify.removeAllTags();
+                }
+            });
         },
         
         // Initialize the component
@@ -113,66 +120,127 @@ document.addEventListener('alpine:init', () => {
                 });
             });
 
-            var inputElm = document.querySelector("#search-parameter");
-            tagify = new Tagify(inputElm, {
+            const search_fields = document.querySelectorAll(".search-parameter");
+            for (let i = 0; i < search_fields.length; i++) {
+                tagify = new Tagify(search_fields[i], {
+                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
+                });
+
+                function onChange(e){
+                    search_fields[i].value = e.target.value;
+                }
+
+                search_fields[i].addEventListener('change', onChange);
+            }
+        },
+
+        add_search_field() {
+            const container = document.querySelector(".search-fields-container");
+            
+            // Create wrapper div for the field and remove button
+            const fieldWrapper = document.createElement("div");
+            fieldWrapper.setAttribute("class", "search-field-wrapper");
+            
+            // Create the input field
+            const newField = document.createElement("input");
+            newField.setAttribute("class", "search-parameter");
+            newField.setAttribute("name", "basic");
+            newField.setAttribute("value", "");
+            
+            // Create remove button
+            const removeButton = document.createElement("button");
+            removeButton.setAttribute("class", "btn btn-remove");
+            removeButton.setAttribute("type", "button");
+            removeButton.setAttribute("aria-label", "Mező eltávolítása");
+            removeButton.textContent = "×";
+            removeButton.addEventListener('click', () => this.remove_search_field(fieldWrapper));
+            
+            // Append field and button to wrapper
+            fieldWrapper.appendChild(newField);
+            fieldWrapper.appendChild(removeButton);
+            
+            // Find the position to insert (before the add button)
+            const addButton = container.querySelector('.btn-secondary');
+            container.insertBefore(fieldWrapper, addButton);
+            
+            // Initialize Tagify for the new field
+            const tagify = new Tagify(newField, {
                 originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
             });
 
             function onChange(e){
-                document.querySelector("#search-parameter").value = e.target.value;
+                newField.value = e.target.value;
             }
-            inputElm.addEventListener('change', onChange);
+
+            newField.addEventListener('change', onChange);
+        },
+
+        remove_search_field(fieldWrapper) {
+            const container = document.querySelector(".search-fields-container");
+            const allSearchFields = container.querySelectorAll(".search-parameter");
+            const fieldWrappers = container.querySelectorAll(".search-field-wrapper");
+            
+            // Prevent removing if there's only one total field left
+            // (considering both unwrapped and wrapped fields)
+            if (allSearchFields.length <= 1) {
+                return;
+            }
+            
+            fieldWrapper.remove();
         },
 
 
         // Save form data
         save() {
             // Validate form before submission
-            this.formData.parameter = document.querySelector("#search-parameter").value;
-            if (!this.validateForm()) {
-                this.modalText = 'Kérjük, ellenőrizd a megadott adatokat és javítsd a hibákat.';
-                this.isModalOpen = true;
-                return;
-            }
-            this.isSubmitting = true;
-            const formData = new URLSearchParams();
-            for (const key in this.formData) {
-                if (Array.isArray(this.formData[key])) {
-                    this.formData[key].forEach(value => formData.append(key, value));
-                } else {
-                    formData.append(key, this.formData[key]);
-                }
-            }
-            document.querySelectorAll('.select2').forEach(select => {
-                const name = select.getAttribute('id')?.replace('select_option_', 'option_');
-                if (name) {
-                    $(select).val().forEach(value => formData.append(name, value));
-                }
-            });
-            fetch(new URL('/api/subscriptions', API_URL), {
-                method: 'POST',
-                body: formData
-            })
-                .then((response) => response.json())
-                .then((respdata) => {
-                    if (respdata.success) {
-                        this.modalText = 'Küldtünk egy emailt a megerősítő linkkel, klikkelj rá!';
-                        this.isModalOpen = true;
-                        this.clearFormData();
-                    } else {
-                        this.validation = respdata.fields;
-                        this.modalText = 'Hibásan töltötted ki a mezőket.';
-                        this.isModalOpen = true;
-                    }
-                })
-                .catch((error) => {
-                    this.modalText = 'Hiba történt az adatok elküldése során. Kérjük, próbáld újra később.';
+            const search_fields = document.querySelectorAll("input.search-parameter");
+            for (let i = 0; i < search_fields.length; i++) {
+                this.formData.parameter = search_fields[i].value;
+                if (!this.validateForm()) {
+                    this.modalText = 'Kérjük, ellenőrizd a megadott adatokat és javítsd a hibákat.';
                     this.isModalOpen = true;
-                    console.error('Form submission error:', error);
-                })
-                .finally(() => {
-                    this.isSubmitting = false;
+                    return;
+                }
+                this.isSubmitting = true;
+                const formData = new URLSearchParams();
+                for (const key in this.formData) {
+                    if (Array.isArray(this.formData[key])) {
+                        this.formData[key].forEach(value => formData.append(key, value));
+                    } else {
+                        formData.append(key, this.formData[key]);
+                    }
+                }
+                document.querySelectorAll('.select2').forEach(select => {
+                    const name = select.getAttribute('id')?.replace('select_option_', 'option_');
+                    if (name) {
+                        $(select).val().forEach(value => formData.append(name, value));
+                    }
                 });
+                fetch(new URL('/api/subscriptions', API_URL), {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then((response) => response.json())
+                    .then((respdata) => {
+                        if (respdata.success) {
+                            this.modalText = 'Küldtünk egy emailt a megerősítő linkkel, klikkelj rá!';
+                            this.isModalOpen = true;
+                            this.clearFormData();
+                        } else {
+                            this.validation = respdata.fields;
+                            this.modalText = 'Hibásan töltötted ki a mezőket.';
+                            this.isModalOpen = true;
+                        }
+                    })
+                    .catch((error) => {
+                        this.modalText = 'Hiba történt az adatok elküldése során. Kérjük, próbáld újra később.';
+                        this.isModalOpen = true;
+                        console.error('Form submission error:', error);
+                    })
+                    .finally(() => {
+                        this.isSubmitting = false;
+                    });
+            }
         },
 
         openManageModal() {
