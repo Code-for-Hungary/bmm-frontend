@@ -57,6 +57,12 @@ document.addEventListener('alpine:init', () => {
                     field.tagify.removeAllTags();
                 }
             });
+            // remove all search fields except the first one
+            const container = document.querySelector(".search-fields-container");
+            const fieldWrappers = container.querySelectorAll(".search-field-wrapper");
+            fieldWrappers.forEach((wrapper, index) => {
+                wrapper.remove();
+            });
         },
         
         // Initialize the component
@@ -194,6 +200,14 @@ document.addEventListener('alpine:init', () => {
         save() {
             // Validate form before submission
             const search_fields = document.querySelectorAll("input.search-parameter");
+            for (let i = 0; i < search_fields.length; i++) {
+                this.formData.parameter = search_fields[i].value;
+                if (!this.validateForm()) {
+                    this.modalText = 'Kérjük, ellenőrizd a megadott adatokat és javítsd a hibákat.';
+                    this.isModalOpen = true;
+                    return;
+                }
+            }
             for (let i = 0; i < search_fields.length; i++) {
                 this.formData.parameter = search_fields[i].value;
                 if (!this.validateForm()) {
